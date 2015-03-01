@@ -109,6 +109,10 @@ class ConfigEntityMapperTest extends UnitTestCase {
       ->will($this->returnValue('entity_id'));
 
     $entity_type = $this->getMock('Drupal\Core\Entity\EntityTypeInterface');
+    $entity_type
+      ->expects($this->any())
+      ->method('getConfigPrefix')
+      ->will($this->returnValue('config_prefix'));
     $this->entityManager
       ->expects($this->once())
       ->method('getDefinition')
@@ -117,6 +121,10 @@ class ConfigEntityMapperTest extends UnitTestCase {
 
     $result = $this->configEntityMapper->setEntity($this->entity);
     $this->assertTrue($result);
+
+    // Ensure that the configuration name was added to the mapper.
+    $plugin_definition = $this->configEntityMapper->getPluginDefinition();
+    $this->assertTrue(in_array('config_prefix.entity_id', $plugin_definition['names']));
 
     // Make sure setEntity() returns FALSE when called a second time.
     $result = $this->configEntityMapper->setEntity($this->entity);
