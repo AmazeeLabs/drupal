@@ -55,14 +55,16 @@ class ConfigFieldMapper extends ConfigEntityMapper {
    * {@inheritdoc}
    */
   public function setEntity(EntityInterface $entity) {
-    parent::setEntity($entity);
+    if (parent::setEntity($entity)) {
 
-    // Field storage config can also contain translatable values. Add the name
-    // of the config as well to the list of configs for this entity.
-    $field_storage = $entity->getFieldStorageDefinition();
-    $entity_type_info = $this->entityManager->getDefinition($field_storage->getEntityTypeId());
-    $this->addConfigName($entity_type_info->getConfigPrefix()  . '.' . $field_storage->id());
-    return TRUE;
+      // Field storage config can also contain translatable values. Add the name
+      // of the config as well to the list of configs for this entity.
+      $field_storage = $entity->getFieldStorageDefinition();
+      $entity_type_info = $this->entityManager->getDefinition($field_storage->getEntityTypeId());
+      $this->addConfigName($entity_type_info->getConfigPrefix()  . '.' . $field_storage->id());
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }
