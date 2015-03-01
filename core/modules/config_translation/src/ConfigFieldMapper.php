@@ -7,6 +7,8 @@
 
 namespace Drupal\config_translation;
 
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * Configuration mapper for fields.
  *
@@ -47,6 +49,20 @@ class ConfigFieldMapper extends ConfigEntityMapper {
   public function getTypeLabel() {
     $base_entity_info = $this->entityManager->getDefinition($this->pluginDefinition['base_entity_type']);
     return $this->t('@label fields', array('@label' => $base_entity_info->getLabel()));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEntity(EntityInterface $entity) {
+    parent::setEntity($entity);
+
+    // Field storage config can also contain translatable values. Add the name
+    // of the config as well to the list of configs for this entity.
+    $field_storage = $entity->getFieldStorageDefinition();
+    $entity_type_info = $this->entityManager->getDefinition($field_storage->getEntityTypeId());
+    $this->addConfigName($entity_type_info->getConfigPrefix()  . '.' . $field_storage->id());
+    return TRUE;
   }
 
 }
