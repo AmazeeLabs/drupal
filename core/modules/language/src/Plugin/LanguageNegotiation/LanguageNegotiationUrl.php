@@ -113,6 +113,13 @@ class LanguageNegotiationUrl extends LanguageNegotiationMethodBase implements In
       return FALSE;
     }
 
+    // Do not redirect if the request has the "destination" query parameter,
+    // because it will override the target URL.
+    /* @see \Drupal\Core\EventSubscriber\RedirectResponseSubscriber::checkRedirectUrl() */
+    if ($request->query->has('destination')) {
+      return FALSE;
+    }
+
     // \Drupal::urlGenerator() will run processOutbound() which will
     // adapt the URL with the url negotiation from the selected language.
     $query = $request->query->all();
