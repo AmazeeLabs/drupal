@@ -62,4 +62,13 @@ interface LanguageNegotiationMethodInterface {
    */
   public function persist(LanguageInterface $language);
 
+  /**
+   * Notifies the plugin about the langcode that has been selected by another
+   * plugin.
+   *
+   * @param \Drupal\Core\Language\LanguageInterface $selected_language
+   *   The selected language by another plugin.
+   */
+  public function reactSelectedLanguage(LanguageInterface $selected_language);
+
 }

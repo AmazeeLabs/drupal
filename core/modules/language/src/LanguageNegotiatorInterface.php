@@ -135,6 +135,18 @@ interface LanguageNegotiatorInterface {
    */
   public function initializeType($type);
 
+
+  /**
+   * Gets enabled detection methods for the provided language type.
+   *
+   * @param string $type
+   *   The language type.
+   *
+   * @return array
+   *   An array of enabled detection methods for the provided language type.
+   */
+  public function getNegotiationMethodsRedirect($type);
+
   /**
    * Returns the language negotiation methods enabled for a language type.
    *

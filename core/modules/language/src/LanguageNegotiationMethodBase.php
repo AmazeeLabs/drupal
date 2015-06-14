@@ -65,4 +65,10 @@ abstract class LanguageNegotiationMethodBase implements LanguageNegotiationMetho
     // Default implementation persists nothing.
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function reactSelectedLanguage(LanguageInterface $language) {
+    // Default implementation persists nothing.
+  }
 }

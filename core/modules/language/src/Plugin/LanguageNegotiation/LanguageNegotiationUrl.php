@@ -15,6 +15,7 @@ use Drupal\Core\Url;
 use Drupal\language\LanguageNegotiationMethodBase;
 use Drupal\language\LanguageSwitcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class for identifying language via URL prefix or domain.
@@ -98,6 +99,37 @@ class LanguageNegotiationUrl extends LanguageNegotiationMethodBase implements In
     }
 
     return $langcode;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function reactSelectedLanguage(LanguageInterface $selected_language) {
+    $request = \Drupal::request();
+
+    // Do not redirect if one of the url prefixes is empty or the request is
+    // something else then GET.
+    if (in_array('', language_negotiation_url_prefixes()) || $request->getMethod() != "GET") {
+      return FALSE;
+    }
+
+    // \Drupal::urlGenerator() will run processOutbound() which will
+    // adapt the URL with the url negotiation from the selected language.
+    $query = $request->query->all();
+    unset($query['q']);
+    $options = array('language' => $selected_language, 'query' => $query);
+    $redirect_uri = \Drupal::urlGenerator()->generateFromPath($request->getPathInfo(), $options);
+
+    // Only redirect if the generated URI is different then the current URI.
+    if ($redirect_uri !== $request->getRequestUri()) {
+      // Don't cache this redirect as every future request has maybe
+      // another language.
+      \Drupal::service('page_cache_kill_switch')->trigger();
+      // Redirects should be absolute, so generate an absolute url.
+      $options['absolute'] = TRUE;
+      $redirect_uri_absolute = \Drupal::urlGenerator()->generateFromPath($request->getPathInfo(), $options);
+      return new RedirectResponse($redirect_uri_absolute);
+    }
   }
 
   /**

@@ -65,6 +65,20 @@ interface LanguageManagerInterface {
   public function getCurrentLanguage($type = LanguageInterface::TYPE_INTERFACE);
 
   /**
+   * Checks if one of the used language negotiation plugins needs a redirect and
+   * returns a RedirectResponse object
+   *
+   * @param string $type
+   *   (optional) The language type; e.g., the interface or the content
+   *   language. Defaults to
+   *   \Drupal\Core\Language\LanguageInterface::TYPE_INTERFACE.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   RedirectResponse object which should be executed.
+   */
+  public function getLanguageRedirect($type = LanguageInterface::TYPE_INTERFACE);
+
+  /**
    * Resets the given language type or all types if none specified.
    *
    * @param string|null $type

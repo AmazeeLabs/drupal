@@ -121,6 +121,13 @@ class LanguageManager implements LanguageManagerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLanguageRedirect($type = LanguageInterface::TYPE_INTERFACE) {
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function reset($type = NULL) {
     return $this;
   }

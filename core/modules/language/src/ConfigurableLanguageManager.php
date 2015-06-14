@@ -17,6 +17,7 @@ use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Url;
 use Drupal\language\Config\LanguageConfigFactoryOverrideInterface;
 use Drupal\language\Entity\ConfigurableLanguage;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -234,6 +235,18 @@ class ConfigurableLanguageManager extends LanguageManager implements Configurabl
     }
 
     return $this->negotiatedLanguages[$type];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLanguageRedirect($type = LanguageInterface::TYPE_INTERFACE) {
+    if ($this->negotiator && $this->isMultilingual()) {
+      $redirect = $this->negotiator->getNegotiationMethodsRedirect($type);
+      if ($redirect instanceof RedirectResponse) {
+        return $redirect;
+      }
+    }
   }
 
   /**

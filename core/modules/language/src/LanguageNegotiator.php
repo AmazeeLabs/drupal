@@ -13,6 +13,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\language\Plugin\LanguageNegotiation\LanguageNegotiationUI;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class responsible for performing language negotiation.
@@ -74,6 +75,13 @@ class LanguageNegotiator implements LanguageNegotiatorInterface {
    * @var \Drupal\Core\Language\LanguageInterface[]
    */
   protected $negotiatedLanguages = array();
+
+  /**
+   * An array of unselected negotiation methods keyed by language type.
+   *
+   * @var \Drupal\Core\Language\LanguageInterface[]
+   */
+  protected $unselectedNegotiationMethodes = array();
 
   /**
    * Constructs a new LanguageNegotiator object.
@@ -146,6 +154,9 @@ class LanguageNegotiator implements LanguageNegotiatorInterface {
           $this->getNegotiationMethodInstance($method_id)->persist($language);
           break;
         }
+        else {
+          $this->unselectedNegotiationMethodes[$type][] = $method_id;
+        }
       }
     }
 
@@ -156,6 +167,22 @@ class LanguageNegotiator implements LanguageNegotiatorInterface {
     }
 
     return array($method_id => $language);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNegotiationMethodsRedirect($type) {
+    if (isset($this->unselectedNegotiationMethodes[$type])) {
+      $language = $this->languageManager->getCurrentLanguage($type);
+      foreach ($this->unselectedNegotiationMethodes[$type] as $method_id) {
+        $response = $this->getNegotiationMethodInstance($method_id)
+          ->reactSelectedLanguage($language);
+        if ($response instanceof RedirectResponse) {
+          return $response;
+        }
+      }
+    }
   }
 
   /**

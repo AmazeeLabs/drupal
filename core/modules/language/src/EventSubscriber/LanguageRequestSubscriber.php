@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Sets the $request property on the language manager.
@@ -74,7 +75,7 @@ class LanguageRequestSubscriber implements EventSubscriberInterface {
    * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
    *   The Event to process.
    */
-  public function onKernelRequestLanguage(GetResponseEvent $event) {
+  public function onKernelRequestSetLanguage(GetResponseEvent $event) {
     if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
       $request = $event->getRequest();
       $this->negotiator->setCurrentUser($this->currentUser);
@@ -91,14 +92,33 @@ class LanguageRequestSubscriber implements EventSubscriberInterface {
   }
 
   /**
+   * Checks the language manager if we need to redirect.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   *   The Event to process.
+   */
+  public function onKernelRequestLanguageRedirect(GetResponseEvent $event) {
+    if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
+      if ($this->languageManager instanceof ConfigurableLanguageManagerInterface) {
+        $redirect = $this->languageManager->getLanguageRedirect();
+        if ($redirect instanceof RedirectResponse) {
+          $event->stopPropagation();
+          $event->setResponse($redirect);
+          return;
+        }
+      }
+    }
+  }
+
+  /**
    * Registers the methods in this class that should be listeners.
    *
    * @return array
    *   An array of event listener definitions.
    */
   static function getSubscribedEvents() {
-    $events[KernelEvents::REQUEST][] = array('onKernelRequestLanguage', 255);
-
+    $events[KernelEvents::REQUEST][] = array('onKernelRequestSetLanguage', 255);
+    $events[KernelEvents::REQUEST][] = array('onKernelRequestLanguageRedirect', 225);
     return $events;
   }
 
