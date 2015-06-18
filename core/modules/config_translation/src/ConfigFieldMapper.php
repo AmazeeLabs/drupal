@@ -7,7 +7,8 @@
 
 namespace Drupal\config_translation;
 
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
 
 /**
  * Configuration mapper for fields.
@@ -54,7 +55,7 @@ class ConfigFieldMapper extends ConfigEntityMapper {
   /**
    * {@inheritdoc}
    */
-  public function setEntity(EntityInterface $entity) {
+  public function setEntity(ConfigEntityInterface $entity) {
     if (parent::setEntity($entity)) {
 
       // Field storage config can also contain translatable values. Add the name
@@ -62,7 +63,9 @@ class ConfigFieldMapper extends ConfigEntityMapper {
       /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
       $field_storage = $this->entity->getFieldStorageDefinition();
       $entity_type_info = $this->entityManager->getDefinition($field_storage->getEntityTypeId());
-      $this->addConfigName($entity_type_info->getConfigPrefix()  . '.' . $field_storage->id());
+      if ($entity_type_info instanceof ConfigEntityTypeInterface) {
+        $this->addConfigName($entity_type_info->getConfigPrefix() . '.' . $field_storage->id());
+      }
       return TRUE;
     }
     return FALSE;
