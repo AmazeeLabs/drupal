@@ -57,7 +57,7 @@ class ConfigEntityMapperTest extends UnitTestCase {
   protected function setUp() {
     $this->entityManager = $this->getMock('Drupal\Core\Entity\EntityManagerInterface');
 
-    $this->entity = $this->getMock('Drupal\Core\Entity\EntityInterface');
+    $this->entity = $this->getMock('Drupal\Core\Config\Entity\ConfigEntityInterface');
 
     $this->routeProvider = $this->getMock('Drupal\Core\Routing\RouteProviderInterface');
 
