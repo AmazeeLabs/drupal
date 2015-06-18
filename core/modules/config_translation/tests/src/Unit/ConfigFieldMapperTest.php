@@ -72,7 +72,7 @@ class ConfigFieldMapperTest extends UnitTestCase {
    * Tests ConfigFieldMapper::setEntity().
    */
   public function testSetEntity() {
-    $entity_type = $this->getMock('Drupal\Core\Entity\EntityTypeInterface');
+    $entity_type = $this->getMock('Drupal\Core\Config\Entity\ConfigEntityTypeInterface');
     $entity_type
       ->expects($this->any())
       ->method('getConfigPrefix')
