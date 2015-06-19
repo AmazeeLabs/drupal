@@ -8,7 +8,6 @@
 namespace Drupal\config_translation;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
 
 /**
  * Configuration mapper for fields.
@@ -62,10 +61,9 @@ class ConfigFieldMapper extends ConfigEntityMapper {
       // of the config as well to the list of configs for this entity.
       /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
       $field_storage = $this->entity->getFieldStorageDefinition();
+      /** @var \Drupal\Core\Config\Entity\ConfigEntityTypeInterface $entity_type_info */
       $entity_type_info = $this->entityManager->getDefinition($field_storage->getEntityTypeId());
-      if ($entity_type_info instanceof ConfigEntityTypeInterface) {
-        $this->addConfigName($entity_type_info->getConfigPrefix() . '.' . $field_storage->id());
-      }
+      $this->addConfigName($entity_type_info->getConfigPrefix() . '.' . $field_storage->id());
       return TRUE;
     }
     return FALSE;

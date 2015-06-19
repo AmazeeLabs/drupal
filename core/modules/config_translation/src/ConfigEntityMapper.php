@@ -9,7 +9,6 @@ namespace Drupal\config_translation;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Config\Entity\ConfigEntityTypeInterface;
 use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -144,10 +143,9 @@ class ConfigEntityMapper extends ConfigNamesMapper {
     // page with more names if form altering added more configuration to an
     // entity. This is not a Drupal 8 best practice (ideally the configuration
     // would have pluggable components), but this may happen as well.
+    /** @var \Drupal\Core\Config\Entity\ConfigEntityTypeInterface $entity_type_info */
     $entity_type_info = $this->entityManager->getDefinition($this->entityType);
-    if ($entity_type_info instanceof ConfigEntityTypeInterface) {
-      $this->addConfigName($entity_type_info->getConfigPrefix() . '.' . $entity->id());
-    }
+    $this->addConfigName($entity_type_info->getConfigPrefix() . '.' . $entity->id());
 
     return TRUE;
   }
